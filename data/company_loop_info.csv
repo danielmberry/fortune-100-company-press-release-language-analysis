@@ -1,0 +1,6 @@
+company,loop_url,type,page_type
+Walmart,https://corporate.walmart.com/newsroom/company-news?p=,pages,page
+Amazon,https://press.aboutamazon.com/press-releases?a9d908dd_year%5Bvalue%5D=,years,year
+Exxon Mobil,https://corporate.exxonmobil.com/api/v2/related/collection?itemid=3f311ddd-4cb5-489b-a768-325e94ee0ef1&contextid=3f311ddd-4cb5-489b-a768-325e94ee0ef1&language=en&pagesize=5&page=,pages,page
+Apple,https://www.apple.com/newsroom/archive/?page=,pages,page
+CVS Health,https://www.cvshealth.com/news-and-insights/press-releases?page=,pages,page
