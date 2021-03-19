@@ -51,9 +51,13 @@ Once I had the newsroom url for each company, I limited the data to just the top
 
 Following the HTML collection, I created a loop that went through all of the files in the [html](./data/html) folder, as well as all of the tags in each row of the file, to gather all of the links from each page. 
 
-I followed this up by filtering out unnecessary links (i.e., those that don't lead to press releases)using `.str.contains()` with regular expressions, and determined whether or not the link needed a base (i.e., whether or not it had `https://....com` in front of it), and added that in to the dicitonary that contained the regular expressions, as appropriate.
+I followed this up by filtering out unnecessary links (i.e., those that don't lead to press releases)using `.str.contains()` with regular expressions, and determined whether or not the link needed a base (i.e., whether or not it had `https://....com` in front of it), and added that in to the dicitonary that contained the regular expressions, as appropriate. 
 
-**ADD IN GRAPH OF BEFORE/AFTER CLEANING**
+As seen in the graph below, cleaning up the links removed unnecessary links from all of the files, the most notable of which is Apple, that lost roughly 95% of the links we gathered.
+
+Prior to cleaning the files, there were 8,147 links in total. After cleaning up the files, there are 2,059 links in total, which means that close to three-quarters (74.7%) of the links originally collected from the HTML have nothing to do with press releases. This leaves a more targeted group of links from which the press releases can be collected.
+
+<img src='./assets/links_pre_post_cleaning.png'/>
 
 ### 5. Gather press release text
 
@@ -63,21 +67,33 @@ Now that I had all of the links to the press releases, I started to collect the 
 
 After I had collected all of the data from the press releases, I had to go through and find the dates for when each press release was published so I could assign the label for modeling. I also cleaned the data to remove mentions of the years, as well as other key words so as to not leak the target into the model. The full list of potential leak words that I removed from the data include: '2021', '2020', '2019', 'Covid-19', 'Covid', 'COVID-19', 'COVID', 'Coronavirus', 'coronavirus' and 'pandemic'.
 
+The cleaned data shows that most companies have published more press releases since the start of the pandemic than they did in the year before. This makes sense, given there are two additional months in the `after` category than there are in the `before` category. The exception in this case is Apple, which has published 9 fewer press releases since January 2020 than it did in all of 2019.
+
+<img src="./assets/press_release_count_by_company.png"/>
+
+Additionally, the data shows that three of the five companies have, on average, published longer press releases after the pandemic than before both by word count and by character length. Apple saw the biggest jump in both of these categories, with press releases that are, on average, 300 words and 2,400 characters longer than they were before the pandemic.
+
+<img src="./assets/avg_word_count_per_press_release_by_company.png"/>
+
+<img src="./assets/avg_char_count_per_press_release_by_company.png"/>
+
 ## Modeling
 
 By using binary classification models, I can determine whether or not press release language has changed by achieving an R2 score higher than the baseline for the data collected. The baseline for this project is 0.539092.
 
 I tested two different types of models, Logistic Regression and KNearest Neighbors, and tested multiple different hyperparameters for each model. 
 
-For my Logistic Regression models, I tested the models with the penalty set to both 'l2' and 'none'. For the KNearest Neighbors models, I tested the models with n_neighbors set to 3, 5 and 8. The training and test scores for each model are below.
+For my Logistic Regression models, I tested the models with the penalty set to both 'l2' and 'none'. For the KNearest Neighbors models, I tested the models with n_neighbors set to 3, 5 and 8. The train, test and ROC-AUC scores for each model can be found in the table at the end of this section.
 
-|Model|Hyperparameter|Train score|Test score|
-|-----|-----|-----|-----|
-|Logistic Regression|penalty: 'l2'|0.7594617325483599|0.654911838790932|
-|Logistic Regression|penalty: 'none'|0.9217830109335576|0.6952141057934509|
-|KNearest Neighbors|n_neighbors: 8|0.7493692178301093|0.672544080604534|
-|KNearest Neighbors|n_neighbors: 5|0.7821698906644239|0.7128463476070529|
-|KNearest Neighbors|n_neighbors: 3|0.8317914213624895|0.707808564231738|
+Overall, the KNN model with n_neighors set to 5 performed the best across train, test and ROC-AUC scores. 
+
+|Model|Hyperparameter|Train score|Test score|ROC-AUC Score|
+|-----|-----|-----|-----|-----|
+|Logistic Regression|penalty: 'l2'|0.7594617325483599|0.654911838790932|0.7365813799090957|
+|Logistic Regression|penalty: 'none'|0.9217830109335576|0.6952141057934509|0.7356876564016139|
+|KNearest Neighbors|n_neighbors: 5|0.7821698906644239|0.7128463476070529|0.7766584954803125|
+|KNearest Neighbors|n_neighbors: 8|0.7493692178301093|0.672544080604534|0.7631888054746949|
+|KNearest Neighbors|n_neighbors: 3|0.8317914213624895|0.707808564231738|0.7535365915938921|
 
 ## Conclusion
 
@@ -94,11 +110,11 @@ Following a robust data collection and modeling process, and due to all of the m
 |[links](./data/links)|Directory|Contains csv files with links parsed from the HTML contained in the html file csvs|None|
 |[press_releases](./data/press_releases)|Directory|Contains csv files with the press release full text, from which the models are trained|None|
 |[01-gather-data-from-fortune-website.ipynb](./code/01-gather-data-from-fortune-website.ipynb)|Jupyter Notebook|Contains code for gathering information from Fortune's website.|[fortune_100_data.csv](./data/fortune_100_data.csv)|
-|[02-finding-newsroom-urls.ipynb](./code/02-finding-newsroom-urls.ipynb)|Jupyter Notebook|Contains code for gathering HTML from company websites to identify the matches for company newsrooms.|[fortune_100_data_w_links.csv](./data/fortune_100_data_w_links.csv)|
-|[03-gathering-html-from-newsrooms.ipynb](./code/03-gathering-html-from-newsrooms.ipynb)|Jupyter Notebook|Contains code to loop through newsroom pages and collect all of the HTML from each page.|Updated [fortune_100_data_w_links.csv](./data/fortune_100_data_w_links.csv) file. Files in the [html](./data/html) folder.|
-|[04-parsing-html-from-files.ipynb](./code/04-parsing-html-from-files.ipynb)|Jupyter Notebook|Contains code to parse all the HTML collected by the code in the previous notebook in order to obtain all the links from the newsrooms.||
-|[05-gathering-press-release-text.ipynb](./code/05-gathering-press-release-text.ipynb)|Jupyter Notebook|||
-|[06-data-cleaning.ipynb](./code/06-data-cleaning.ipynb)|Jupyter Notebook|||
+|[02-find-newsroom-urls.ipynb](./code/02-find-newsroom-urls.ipynb)|Jupyter Notebook|Contains code for gathering HTML from company websites to identify the matches for company newsrooms.|[fortune_100_data_w_links.csv](./data/fortune_100_data_w_links.csv)|
+|[03-gather-html-from-newsrooms.ipynb](./code/03-gather-html-from-newsrooms.ipynb)|Jupyter Notebook|Contains code to loop through newsroom pages and collect all of the HTML from each page.|Updated [fortune_100_data_w_links.csv](./data/fortune_100_data_w_links.csv) file. Files in the [html](./data/html) folder.|
+|[04-parse-html-from-files.ipynb](./code/04-parse-html-from-files.ipynb)|Jupyter Notebook|Contains code to parse all the HTML collected by the code in the previous notebook in order to obtain all the links from the newsrooms.||
+|[05-gather-press-release-text.ipynb](./code/05-gather-press-release-text.ipynb)|Jupyter Notebook|||
+|[06-clean-explore-data.ipynb](./code/06-clean-explore-data.ipynb)|Jupyter Notebook|||
 |[07-NLP-modeling.ipynb](./code/07-NLP-modeling.ipynb)|Jupyter Notebook|||
 |[fortune_100_data.csv](./data/fortune_100_data.csv)|.csv file|Output from [01-gather-data-from-fortune-website.ipynb](./code/01-gather-data-from-fortune-website.ipynb). Contains information gathered from Fortune's website.|None|
-|[fortune_100_data_w_links.csv](./data/fortune_100_data_w_links.csv)|.csv file|Output from the culmination of [02-finding-newsroom-urls.ipynb](./code/02-finding-newsroom-urls.ipynb) and [03-gathering-html-from-newsrooms.ipynb](./code/03-gathering-html-from-newsrooms.ipynb). Contains data from Fortune website, along with additional information from each company's website.|None|
+|[fortune_100_data_w_links.csv](./data/fortune_100_data_w_links.csv)|.csv file|Output from the culmination of [02-find-newsroom-urls.ipynb](./code/02-find-newsroom-urls.ipynb) and [03-gather-html-from-newsrooms.ipynb](./code/03-gather-html-from-newsrooms.ipynb). Contains data from Fortune website, along with additional information from each company's website.|None|
