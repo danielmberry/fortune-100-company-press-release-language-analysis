@@ -85,7 +85,13 @@ I tested two different types of models, Logistic Regression and KNearest Neighbo
 
 For my Logistic Regression models, I tested the models with the penalty set to both 'l2' and 'none'. For the KNearest Neighbors models, I tested the models with n_neighbors set to 3, 5 and 8. The train, test and ROC-AUC scores for each model can be found in the table at the end of this section.
 
-Overall, the KNN model with n_neighors set to 5 performed the best across train, test and ROC-AUC scores. 
+Overall, the KNN model with n_neighbors set to 5 performed the best across train, test and ROC-AUC scores. As seen below in the confusion matrix created by the model's prediction on the test data, the model performed well on the test data, achieving an accuracy score of 0.77, well above the baseline 0.54. 
+
+<img src="./assets/knn5_confusion_matrix.png"/>
+
+Additionally, the KNN model with n_neighbors set to 5 saw the highest ROC-AUC score out of the five models, with a score of almost 0.78.
+
+<img src="./assets/knn5_roc_curve.png"/>
 
 |Model|Hyperparameter|Train score|Test score|ROC-AUC Score|
 |-----|-----|-----|-----|-----|
