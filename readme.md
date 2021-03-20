@@ -6,6 +6,7 @@
 * [Data Collection & Cleaning](#Data-Collection-&-Cleaning)
 * [Modeling](#Modeling)
 * [Conclusion](#Conclusion)
+* [Next Steps](#Next-Steps)
 * [Repo Contents](#Repo-Contents)
 
 ## Introduction
@@ -13,14 +14,14 @@ Press releases play an importance role in how companies communicate with key sta
 
 Since the start of the pandemic, companies have had to continue to find ways to communicate their actions with stakeholders during a time when many were unable to connect with them in person.
 
-This project seeks to determine if press release language before and after the start of the pandemic has changed. In order to determine whether or not there is a difference in how companies speak in press releases since the start of the pandemic, this project leverages Natural Language Processing (NLP) and several binary classification models to predict which time period a press release was published. 
+This project seeks to determine if press release language before and after the start of the pandemic has changed. In order to determine whether or not there is a difference in how companies speak in press releases since the start of the pandemic, this project leverages Natural Language Processing (NLP) and binary classification models to predict which time period a press release was published. 
 
-For the purposes of this project, all press releases published before January 2020 will be categorized as `before`, while all press releases published starting January 1, 2020 until present day will be categorized as `after`. I chose January 2020 as the start date of the pandemic because, although lockdowns in the U.S. did not start until March, companies were beginning to have supply chain issues as lockdowns in China caused significant manufacturing delays. 
+For the purposes of this project, all press releases published before January 2020 will be categorized as `before`, while all press releases published starting January 1, 2020 until present day will be categorized as `after`. I chose January 2020 as the start date of the pandemic because, although lockdowns in the U.S. did not start until March, companies started to experience issues in their supply chains as lockdowns in China caused significant manufacturing delays. 
 
-My baseline is 0.539092. Across all of the models I tested, they all performed better than the baseline, with the KNearest Neighbors (KNN) models performing the best. 
+For this project, my baseline was 0.539092, close to an even split across the two categories. Across all of the models I tested, they all performed better than the baseline, with the KNearest Neighbors (KNN) models performing the best. 
 
-* KNN with n_neighbors=5 scored the best, with 0.782169 on the training data and 0.712846 on the test data. 
-* KNN with n_neighbors=3 scored higher on the training data with a score of 0.831791, but scores lower on the test data, with a score of 0.707808.
+* KNN with n_neighbors=5 scored the best, with a score of 0.782169 on the training data and a score of 0.712846 on the test data. 
+* KNN with n_neighbors=3 scored higher on the training data with a score of 0.831791, but scored lower on the test data, with a score of 0.707808.
 
 ## Problem Statement
 Use NLP and binary classification models to determine whether or not the top five Fortune 100 companies have been changed how they communicate through press releases.
@@ -39,9 +40,9 @@ In a few instances, the link provided by Fortune was incorrect, so I manually re
 
 ### 2. Find the newsroom links for each company from their company page
 
-Once I had a link for each company's main/corporate website, I scraped all of the links from the HTML on the company's homepage and used the `fuzzywuzzy` library to determine how close each link was to `news`, `press` and `corporate` to account for differences in how each company might refer to their newsroom pages. 
+Once I had a link for each company's main/corporate website, I scraped all of the links from the HTML on the company's homepage and used the `fuzzywuzzy` library to determine how close each link was to the words `news`, `press` and `corporate` to account for differences in how each company might refer to its newsroom page. 
 
-From there, I was able to assess the links and create a dictionary that contained each company's newsroom link, which was then assigned to each company in the `final` column of the dataframe.
+From there, I was able to assess the links and create a file that contained each company's newsroom link, which was then assigned to each company in the `final` column of the dataframe.
 
 ### 3. Gather HTML from newsrooms
 
@@ -49,7 +50,7 @@ Once I had the newsroom url for each company, I limited the data to just the top
 
 ### 4. Parse HTML from files
 
-Following the HTML collection, I created a loop that went through all of the files in the [html](./data/html) folder, as well as all of the tags in each row of the file, to gather all of the links from each page. 
+Following the HTML collection, I created a loop that iterated through all of the files in the [html](./data/html) folder, as well as all of the tags in each row of the file, to gather the links from each page. 
 
 I followed this up by filtering out unnecessary links (i.e., those that don't lead to press releases)using `.str.contains()` with regular expressions, and determined whether or not the link needed a base (i.e., whether or not it had `https://....com` in front of it), and added that in to the dicitonary that contained the regular expressions, as appropriate. 
 
@@ -65,7 +66,7 @@ Now that I had all of the links to the press releases, I started to collect the 
 
 ### 6. Data cleaning
 
-After I had collected all of the data from the press releases, I had to go through and find the dates for when each press release was published so I could assign the label for modeling. I also cleaned the data to remove mentions of the years, as well as other key words so as to not leak the target into the model. The full list of potential leak words that I removed from the data include: '2021', '2020', '2019', 'Covid-19', 'Covid', 'COVID-19', 'COVID', 'Coronavirus', 'coronavirus' and 'pandemic'.
+After I had collected all of the data from the press releases, I had to go through and find the dates for when each press release was published so I could assign the label for modeling. I also cleaned the data to remove mentions of the years and other key words so as to not leak the target into the model. The several of the words in the list of potential leak words that I removed from the data include: '2021', '2020', '2019', 'Covid-19', 'Covid', 'COVID-19', 'COVID', 'Coronavirus', 'coronavirus' and 'pandemic'.
 
 The cleaned data shows that most companies have published more press releases since the start of the pandemic than they did in the year before. This makes sense, given there are two additional months in the `after` category than there are in the `before` category. The exception in this case is Apple, which has published 9 fewer press releases since January 2020 than it did in all of 2019.
 
@@ -79,17 +80,17 @@ Additionally, the data shows that three of the five companies have, on average, 
 
 ## Modeling
 
-By using binary classification models, I can determine whether or not press release language has changed by achieving an R2 score higher than the baseline for the data collected. The baseline for this project is 0.539092.
+By using binary classification models, I can determine whether or not press release language has changed by achieving an accuracy score higher than the baseline for the data collected. The baseline for this project is 0.539092.
 
-I tested two different types of models, Logistic Regression and KNearest Neighbors, and tested multiple different hyperparameters for each model. 
+I tested two different types of models, Logistic Regression and KNearest Neighbors, and tested different hyperparameters for each model. 
 
-For my Logistic Regression models, I tested the models with the penalty set to both 'l2' and 'none'. For the KNearest Neighbors models, I tested the models with n_neighbors set to 3, 5 and 8. The train, test and ROC-AUC scores for each model can be found in the table at the end of this section.
+For my Logistic Regression models, I tested the models with the `penalty` set to both 'l2' and 'none'. For the KNearest Neighbors models, I tested the models with `n_neighbors` set to 3, 5 and 8. The train, test and ROC-AUC scores for each model can be found in the table at the end of this section.
 
-Overall, the KNN model with n_neighbors set to 5 performed the best across train, test and ROC-AUC scores. As seen below in the confusion matrix created by the model's prediction on the test data, the model performed well on the test data, achieving an accuracy score of 0.77, well above the baseline 0.54. 
+Overall, the KNN model with `n_neighbors` set to 5 performed the best across train, test and ROC-AUC scores. As seen below in the confusion matrix created by the model's prediction on the test data, the model performed well on the test data, achieving an accuracy score of 0.77, well above the baseline 0.54. 
 
 <img src="./assets/knn5_confusion_matrix.png"/>
 
-Additionally, the KNN model with n_neighbors set to 5 saw the highest ROC-AUC score out of the five models, with a score of almost 0.78.
+Additionally, the KNN model with `n_neighbors` set to 5 saw the highest ROC-AUC score out of the five models, with a score of almost 0.78.
 
 <img src="./assets/knn5_roc_curve.png"/>
 
@@ -104,6 +105,13 @@ Additionally, the KNN model with n_neighbors set to 5 saw the highest ROC-AUC sc
 ## Conclusion
 
 Following a robust data collection and modeling process, and due to all of the models beating the baseline score, I have concluded that companies have changed the way they communicate through press releases in significant enough ways that machine learning can detect the difference.
+
+## Next Steps
+
+Next steps in this project could include:
+* Exploring how the press release language changed between the two time periods by exploring the most-used words in each category
+* Testing additional classification models to see if the model performance improves
+* Using `GridSearchCV` to test more hyperparameters and determine if there are any other changes that could improve the models' performance
 
 ## Repo Contents
 
