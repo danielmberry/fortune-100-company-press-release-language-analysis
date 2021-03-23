@@ -18,10 +18,10 @@ This project seeks to determine if press release language before and after the s
 
 For the purposes of this project, all press releases published before January 2020 will be categorized as `before`, while all press releases published starting January 1, 2020 until present day will be categorized as `after`. I chose January 2020 as the start date of the pandemic because, although lockdowns in the U.S. did not start until March, companies started to experience issues in their supply chains as lockdowns in China caused significant manufacturing delays. 
 
-For this project, my baseline was 0.539092, close to an even split across the two categories. Across all of the models I tested, they all performed better than the baseline, with the KNearest Neighbors (KNN) models performing the best. 
+For this project, my baseline was 0.54, close to an even split across the two categories. Across all of the models I tested, they all performed better than the baseline, with the KNearest Neighbors (KNN) models performing the best. 
 
-* KNN with n_neighbors=5 scored the best, with a score of 0.782169 on the training data and a score of 0.712846 on the test data. 
-* KNN with n_neighbors=3 scored higher on the training data with a score of 0.831791, but scored lower on the test data, with a score of 0.707808.
+* KNN with `n_neighbors = 5` scored the best, with a score of 0.78 on the training data and a score of 0.71 on the test data. 
+* KNN with `n_neighbors = 3` scored higher on the training data with a score of 0.83, but scored lower on the test data, with a score of 0.70.
 
 ## Problem Statement
 Use NLP and binary classification models to determine whether or not the top five Fortune 100 companies have been changed how they communicate through press releases.
@@ -80,17 +80,17 @@ Additionally, the data shows that three of the five companies have, on average, 
 
 ## Modeling
 
-By using binary classification models, I can determine whether or not press release language has changed by achieving an accuracy score higher than the baseline for the data collected. The baseline for this project is 0.539092.
+By using binary classification models, I can determine whether or not press release language has changed by achieving an accuracy score higher than the baseline for the data collected. The baseline for this project is 0.54.
 
 I tested two different types of models, Logistic Regression and KNearest Neighbors, and tested different hyperparameters for each model. 
 
-For my Logistic Regression models, I tested the models with the `penalty` set to both 'l2' and 'none'. For the KNearest Neighbors models, I tested the models with `n_neighbors` set to 3, 5 and 8. The train, test and ROC-AUC scores for each model can be found in the table at the end of this section.
+For my Logistic Regression models, I tested the models with the `penalty` set to both `l2` and `none`. For the KNearest Neighbors models, I tested the models with `n_neighbors` set to `3`, `5` and `8`. The train, test and ROC-AUC scores for each model can be found in the table at the end of this section.
 
 Overall, the KNN model with `n_neighbors` set to 5 performed the best across train, test and ROC-AUC scores. As seen below in the confusion matrix created by the model's prediction on the test data, the model performed well on the test data, achieving an accuracy score of 0.71, well above the baseline 0.54. 
 
 <img src="./assets/knn5_confusion_matrix.png"/>
 
-Additionally, the KNN model with `n_neighbors` set to 5 saw the highest ROC-AUC score out of the five models, with a score of almost 0.78.
+Additionally, the KNN model with `n_neighbors` set to `5` saw the highest ROC-AUC score out of the five models, with a score of almost 0.78.
 
 <img src="./assets/knn5_roc_curve.png"/>
 
